@@ -1,0 +1,89 @@
+<template>
+
+    <div class="slds-m-around_medium">
+      
+        <div class="slds-m-bottom_small">
+            <lightning-input type="text"
+               value={searchValue}
+               label="SEARCH BY NAME"
+               ></lightning-input>
+         </div>
+         
+         <lightning-button label="FILTER"
+            onclick={handleSearchKeyword}
+            variant="brand"></lightning-button>
+            
+
+    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered contacts">
+        <thead>
+        <tr class="slds-line-height_reset parent_component">
+
+       <th class="" scope="col">
+       <div class="slds-truncate" title="FIRST NAME">FIRST NAME</div>
+       </th>
+
+       <th class="" scope="col">
+       <div class="slds-truncate" title="LAST NAME">LAST NAME</div>
+       </th>
+
+       <th class="" scope="col">
+       <div class="slds-truncate" title="EMAIL">EMAIL</div>
+       </th>
+
+       <th class="" scope="col">
+       <div class="slds-truncate" title="ACCOUNT">ACCOUNT</div>
+       </th>
+
+       <th class="" scope="col">
+       <div class="slds-truncate" title="MOBILE PHONE">MOBILE PHONE</div>
+       </th>
+
+       <th class="" scope="col">
+       <div class="slds-truncate" title="CREATED DATE">CREATED DATE</div>
+       </th>
+       </tr>
+       </thead>
+
+
+       <tbody>
+        <template for:each={contacts} for:item="con">
+
+       <tr key={contact.Id} class="slds-hint-parent child_component">
+       
+       <th scope="col"> <div class = "slds-truncate">
+          {con.FirstName}
+         </div> </th>
+
+       <td scope="col"> <div class = "slds-truncate">
+        {con.LastName}
+       </div> </td>
+
+       <td scope="col"><div class = "slds-truncate">
+            <lightning-formatted-email value={con.Email}></lightning-formatted-email>
+        </div></td>
+
+       <td scope="col"><div class = "slds-truncate">
+        {con.Account.Name}
+        </div></td>
+
+       <td scope="col"><div class = "slds-truncate">
+           <lightning-formatted-phone value={con.MobilePhone}></lightning-formatted-phone>
+        </div></td>
+
+       <td scope="col"><div class = "slds-truncate">
+        <lightning-formatted-date-time
+        value={con.CreatedDate}
+        year="numeric"
+        month="numeric"
+        day="numeric"
+        hour="2-digit"
+        minute="2-digit"
+        time-zone-name="short">
+</lightning-formatted-date-time>
+        </div></td>
+       </tr>
+    </template>
+       </tbody>
+       </table> 
+       </div> 
+</template>
