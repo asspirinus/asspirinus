@@ -7,7 +7,7 @@ export default class ContactTable extends LightningElement {
 
     searchValue = searchKeyword;
  
-    
+ 
     handleSearchKeyword() {
         
         if (searchValue !== '') {
