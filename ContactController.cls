@@ -1,5 +1,5 @@
 public with sharing class ContactController {
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static list<contact> getContactList(string searchKey) {
         string searchKeyword = '%' + searchKey + '%';
 		
@@ -14,7 +14,12 @@ public with sharing class ContactController {
              
              for(contact con : contactList){
                  contactListRecord.add(con);
+
         }
+        if(contactListRecord.size() == 0){
+            throw new AuraHandledException ('No Record Found...'); 
+         }
          return contactListRecord;
+         
     }      
 }
