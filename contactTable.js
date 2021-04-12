@@ -1,4 +1,4 @@
-import { LightningElement, track, wire } from 'lwc';
+import { LightningElement, track } from 'lwc';
 import getContactList from '@salesforce/apex/ContactController.getContactList';
 import {ShowToastEvent} from 'lightning/platformShowToastEvent';
 export default class ContactTable extends LightningElement {
