@@ -3,9 +3,11 @@
     <div class="slds-m-around_medium">
       
         <div class="slds-m-bottom_small">
-            <lightning-input type="text"
-               value={searchValue}
-               label="SEARCH BY NAME"
+            <lightning-input 
+               type="text"
+               label="SEARCH"
+               placeholder="Search by name"
+               onchange={searchKeyword}
                ></lightning-input>
          </div>
          
@@ -86,4 +88,5 @@
        </tbody>
        </table> 
        </div> 
+    
 </template>
