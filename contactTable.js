@@ -13,7 +13,7 @@ export default class ContactTable extends LightningElement {
     handleSearchKeyword() {
 
         getContactList({
-            searchKey : searchValue})
+            searchKey : this.searchValue})
   
          .then(result => {
               
