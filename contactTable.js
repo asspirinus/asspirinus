@@ -1,41 +1,25 @@
 import { LightningElement, track } from 'lwc';
 import getContactList from '@salesforce/apex/ContactController.getContactList';
-import {ShowToastEvent} from 'lightning/platformShowToastEvent';
 export default class ContactTable extends LightningElement {
 
-    @track contactListRecord;
-  
+    @track data ;
+    
     searchValue;
  
     searchKeyword(event) {
         this.searchValue = event.target.value;
     }
+    
     handleSearchKeyword() {
+
+        getContactList({
+            searchKey : searchValue})
+  
+         .then(result => {
+              
+             this.data = result;
+         }) 
         
-        if (this.searchValue !== '') {
-            getContactList({
-                searchKey : this.searchValue
-                })
-                .then(result => {
-                    this.contactListRecord = result;
-                    
-                })
-                .catch(error => {
-                   
-                    const event = new ShowToastEvent({
-                        title: 'Error',
-                        variant: 'error',
-                        message: error.body.message,
-                    });
-                    this.dispatchEvent(event);
-                    this.contactListRecord = null;
-                });
-        } else {
-            const event = new ShowToastEvent({
-                variant: 'error',
-                message: 'Search text missing...',
-            });
-            this.dispatchEvent(event);
+        
         }
-    }
-}
+ }
