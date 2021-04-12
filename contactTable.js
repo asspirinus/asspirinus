@@ -18,7 +18,7 @@ export default class ContactTable extends LightningElement {
                 })
                 .then(result => {
                     this.contactListRecord = result;
-                    return contactListRecord;
+                    
                 })
                 .catch(error => {
                    
