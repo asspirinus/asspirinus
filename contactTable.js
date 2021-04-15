@@ -59,11 +59,10 @@ export default class ContactTable extends LightningElement {
         this.keyword = event.target.value;
     }
       
-    handleSearchKeyword(event){
-        this.keyword = this.template.querySelector('lightning-input').value;
-
-    getContactList({ searchKey: "$keyword" })
+    handleSearchKeyword(event){}
     
+            @wire(getContactList, { searchKey: "$keyword" })
+    wiredSearch(result) {
         if (result.data) {
             let AccountUrl;
             let AccountName;
@@ -78,5 +77,4 @@ export default class ContactTable extends LightningElement {
             this.rows = undefined;
         }
     }
-
 }
