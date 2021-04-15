@@ -59,9 +59,28 @@ export default class ContactTable extends LightningElement {
         this.keyword = event.target.value;
     }
       
-    handleSearchKeyword(event){}
-    
-            @wire(getContactList, { searchKey: "$keyword" })
+    handleSearchKeyword(){
+            getContactList ({ searchKey: '$keyword' })
+            .then((result) => {
+                if (result.data) {
+                    this.rows = result.data.map(this.ContactRows);
+                    this.error = undefined;
+                }
+            })
+            .catch((error) => {
+                this.error = error;
+                this.rows = undefined;
+            });
+        }
+        ContactRows(row) {
+            let contact = {
+                ...row,
+                AccountName: row.Account.Name,
+                AccountUrl: `/${row.AccountId}`
+            };
+            return contact;
+        }
+       /* @wire(getContactList, { searchKey: "$keyword" })
     wiredSearch(result) {
         if (result.data) {
             let AccountUrl;
@@ -74,7 +93,11 @@ export default class ContactTable extends LightningElement {
                 
             });
         } else if (result.error) {
+            
             this.rows = undefined;
         }
+    }    */
+        
     }
-}
+
+
