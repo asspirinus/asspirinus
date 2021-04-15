@@ -1,5 +1,6 @@
-import { LightningElement, track, wire } from "lwc";
+import { LightningElement } from "lwc";
 import getContactList from "@salesforce/apex/ContactController.getContactList";
+import {ShowToastEvent} from 'lightning/platformShowToastEvent';
 
 const CONTACT_COLUMNS = [
     {
@@ -51,25 +52,30 @@ const CONTACT_COLUMNS = [
 
 export default class ContactTable extends LightningElement {
     columns = CONTACT_COLUMNS;
-    keyword = "";
+    searchKey = "";
 
-    @track rows;
-    
+     rows;
+     error;
     searchKeyword(event) {
-        this.keyword = event.target.value;
+        this.searchKey = event.target.value;
     }
       
     handleSearchKeyword(){
-            getContactList ({ searchKey: '$keyword' })
+            getContactList ({ searchKey: this.searchKey })
             .then((result) => {
-                if (result.data) {
-                    this.rows = result.data.map(this.ContactRows);
+                
+                    this.rows = result.map(this.ContactRows);
                     this.error = undefined;
-                }
+                
             })
             .catch((error) => {
-                this.error = error;
-                this.rows = undefined;
+                const event = new ShowToastEvent({
+                    title: 'Error',
+                    variant: 'error',
+                    message: error.body.message,
+                });
+                this.dispatchEvent(event);
+                this.rows = null;
             });
         }
         ContactRows(row) {
@@ -80,24 +86,6 @@ export default class ContactTable extends LightningElement {
             };
             return contact;
         }
-       /* @wire(getContactList, { searchKey: "$keyword" })
-    wiredSearch(result) {
-        if (result.data) {
-            let AccountUrl;
-            let AccountName;
-            this.rows = result.data.map(row=>{
-                AccountName= row.Account.Name;
-                AccountUrl = `/${row.AccountId}`;
-                
-                return{...row,AccountName, AccountUrl}
-                
-            });
-        } else if (result.error) {
-            
-            this.rows = undefined;
-        }
-    }    */
-        
     }
 
 
