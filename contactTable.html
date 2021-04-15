@@ -1,5 +1,6 @@
 <template>
     <div class="slds-m-around_medium">
+        
         <div class="slds-m-bottom_small">
             <lightning-input
                 type="text"
@@ -9,20 +10,19 @@
                 onchange={searchKeyword}
             ></lightning-input>
         </div>
+        
         <div style ="padding-bottom:10px ;">
             <lightning-button   
              label="FILTER"
              onclick={handleSearchKeyword}
             variant="brand">
         </lightning-button>
-        
         </div>
         
         <lightning-datatable
         data={rows}
         columns={columns}
         key-field="Id">
-        
          </lightning-datatable>
     </div>
 </template>
