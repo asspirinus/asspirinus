@@ -1,4 +1,12 @@
 public with sharing class ContactController {
+
+    @AuraEnabled(Cacheable=true)
+    public static List<Contact> getContactListWire() {
+        return[SELECT id, FirstName, LastName, Email, Account.Name, Phone, CreatedDate
+            FROM Contact
+        ];
+    }
+
     @AuraEnabled(Cacheable=true)
     public static List<Contact> getContactList(String searchKey) {
         string Keyword = '%' + searchKey + '%';
@@ -9,9 +17,13 @@ public with sharing class ContactController {
             WHERE FirstName LIKE :Keyword
         ];
         if(contacts.size() == 0){
-            throw new AuraHandledException ('No Record Found...');
+             throw new AuraHandledException ('No Record Found...');
         }
-        system.debug(contacts);
         return contacts;
+    }
+
+    @AuraEnabled
+    public static void deleteContact(id[] contactIds){
+        delete [SELECT id FROM Contact where id IN: contactIds];
     }
 }
