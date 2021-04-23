@@ -34,7 +34,7 @@ export default class ContactTable extends LightningElement {
     contacts(result) {
         this.refreshTable = result;
         if (result.data) {
-            this.data = result.data.map(this.ContactRows);
+            this.data = result.data.map(this.AccountNames);
             this.error = undefined;
 
         } else if (result.error) {
@@ -50,7 +50,7 @@ export default class ContactTable extends LightningElement {
     handleSearchKeyword(){
         getContactList ({ searchKey: this.searchKey })
             .then((result) => {
-                    this.data = result.map(this.ContactRows);
+                    this.data = result.map(this.AccountNames);
                     this.error = undefined;  
             })
             .catch((error) => {
@@ -63,8 +63,8 @@ export default class ContactTable extends LightningElement {
                 this.data = null;
             });
         }
-    
-        ContactRows(row) {
+    //Detail account name
+        AccountNames(row) {
             let contact = {
                 ...row,
                 AccountName: row.Account.Name,
