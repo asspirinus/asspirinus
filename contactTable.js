@@ -1,72 +1,57 @@
-import { LightningElement } from "lwc";
+import { LightningElement, track, wire } from "lwc";
+import {refreshApex} from '@salesforce/apex';
 import getContactList from "@salesforce/apex/ContactController.getContactList";
+import getContactListWire from "@salesforce/apex/ContactController.getContactListWire"
+import deleteContact from "@salesforce/apex/ContactController.deleteContact";
 import {ShowToastEvent} from 'lightning/platformShowToastEvent';
 
+const button_Delete = [
+    { label: 'Delete', name: 'delete' },
+];
 const CONTACT_COLUMNS = [
-    {
-        label: "FIRST NAME",
-        fieldName: "FirstName",
-        hideDefaultActions: true,
-        type: "text"
-    },
-    {
-        label: "LAST NAME",
-        fieldName: "LastName"
-    },
-    {
-        label: "EMAIL",
-        fieldName: "Email",
-        type: "email"
-    },
-    {
-        label: "ACCOUNT NAME",
-        fieldName: "AccountUrl",
-        type: "url",
-        typeAttributes: {
-            label: { fieldName: 'AccountName'}
-        }
-                 
-    
-    },
-    {
-        label: "MOBILE PHONE",
-        fieldName: "Phone",
-        type: "phone"
-    },
-    {
-        label: "CREATED DATE",
-        fieldName: "CreatedDate",
-        type: "date",
-        typeAttributes: {
-            
-            value:"1547250828000",
-            year:"numeric",
-            month:"numeric",
-            day:"numeric",
-            hour:"2-digit",
-            minute:"2-digit",
-            hour12:"true"
-        }
-    }
+    {label: "FIRST NAME", fieldName: "FirstName", type: "text"},
+    {label: "LAST NAME", fieldName: "LastName"},
+    {label: "EMAIL", fieldName: "Email", type: "email"},
+    {label: "ACCOUNT NAME", fieldName: "AccountUrl", type: "url", typeAttributes: {label: { fieldName: 'AccountName'}}},
+    {label: "MOBILE PHONE", fieldName: "Phone", type: "phone"},
+    {label: "CREATED DATE", fieldName: "CreatedDate", type: "date", typeAttributes: {value:"1547250828000", year:"numeric",
+     month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit", hour12:"true"}},
+    {type: 'button', typeAttributes: { RowAction: button_Delete, variant:"destructive", label:"Delete",name: 'delete', iconName:"utility:delete", class: "slds-m-left_x-small"}}  
 ];
 
 export default class ContactTable extends LightningElement {
     columns = CONTACT_COLUMNS;
     searchKey = "";
+    error;
+    @track row;
+    @track record = [];
+    @track openDeleteModal = false;
+    @track data;
+    @track refreshTable;
+    @track currentRecordId;
+    
+    @wire(getContactListWire)
+    contacts(result) {
+        this.refreshTable = result;
+        if (result.data) {
+            this.data = result.data.map(this.ContactRows);
+            this.error = undefined;
 
-     rows;
-     error;
+        } else if (result.error) {
+            this.error = result.error;
+            this.data = undefined;
+        }
+    }
+
     searchKeyword(event) {
         this.searchKey = event.target.value;
     }
-      
+    //Search by name
     handleSearchKeyword(){
-            getContactList ({ searchKey: this.searchKey })
+        getContactList ({ searchKey: this.searchKey })
             .then((result) => {
-                
-                    this.rows = result.map(this.ContactRows);
-                    this.error = undefined;
-                
+                    this.data = result.map(this.ContactRows);
+                    this.error = undefined;  
             })
             .catch((error) => {
                 const event = new ShowToastEvent({
@@ -75,9 +60,10 @@ export default class ContactTable extends LightningElement {
                     message: error.body.message,
                 });
                 this.dispatchEvent(event);
-                this.rows = null;
+                this.data = null;
             });
         }
+    
         ContactRows(row) {
             let contact = {
                 ...row,
@@ -85,7 +71,55 @@ export default class ContactTable extends LightningElement {
                 AccountUrl: `/${row.AccountId}`
             };
             return contact;
+        }   
+    //Delete  currentRow 
+    handleRowAction(event) {
+        let buttonName = event.detail.action.name;
+        console.log('buttonName ====> ' + buttonName);
+        let row = event.detail.row;
+        console.log('row ====> ' + row);
+        switch (buttonName) {
+            case 'delete':
+                this.deleteRow(row);
+                break;
+            }
+       }
+       //Open modal box
+        deleteRow(currentRow) {
+                this.openDeleteModal = true;
+                this.currentRecordId = currentRow.Id;
         }
-    }
 
+     //closing modal box
+        closeDeleteModal() {
+                 this.openDeleteModal = false;
+               }
 
+                //Calling Apex 
+            deleteContactRow(currentRow){
+                let currentRecord = [];
+                currentRecord = currentRow.Id;
+                deleteContact({contactIds: currentRecord})
+                
+                .then(result => {
+                    window.console.log('result ====> ' + result);
+                    this.closeDeleteModal();
+                    refreshApex(this.refreshTable);
+
+                    this.dispatchEvent(new ShowToastEvent({
+                        title: 'Success!!!',
+                        message: currentRow.FirstName + ' '+ currentRow.LastName +' Contact deleted.',
+                        variant: 'success'
+                    }));
+                })
+                .catch(error => {
+                    window.console.log('Error ====> '+error);
+                    this.dispatchEvent(new ShowToastEvent({
+                        title: 'Error!!', 
+                        message: error.message, 
+                        variant: 'error'
+                    }));
+                });
+            
+            }
+}
