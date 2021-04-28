@@ -2,7 +2,7 @@ public with sharing class ContactController {
 
     @AuraEnabled(Cacheable=true)
     public static List<Contact> getContactListWire() {
-        return[SELECT id, FirstName, LastName, Email, Account.Name, Phone, CreatedDate
+        return[SELECT id, FirstName, LastName, Email,AccountId, Account.Name, Phone, CreatedDate
             FROM Contact
         ];
     }
@@ -12,7 +12,7 @@ public with sharing class ContactController {
         string Keyword = '%' + searchKey + '%';
 
         List<contact> contacts = [
-            SELECT id, FirstName, LastName, Email, Account.Name, Phone, CreatedDate
+            SELECT id, FirstName, LastName, Email,AccountId, Account.Name, Phone, CreatedDate
             FROM Contact
             WHERE FirstName LIKE :Keyword
         ];
