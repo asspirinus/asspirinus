@@ -21,9 +21,4 @@ public with sharing class ContactController {
         }
         return contacts;
     }
-
-    @AuraEnabled
-    public static void deleteContact(id[] contactIds){
-        delete [SELECT id FROM Contact where id IN: contactIds];
-    }
 }
