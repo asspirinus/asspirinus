@@ -2,12 +2,8 @@ import { LightningElement,wire, track } from "lwc";
 import {refreshApex} from '@salesforce/apex';
 import getContactList from "@salesforce/apex/ContactController.getContactList";
 import getContactListWire from "@salesforce/apex/ContactController.getContactListWire"
-import deleteContact from "@salesforce/apex/ContactController.deleteContact";
 import {ShowToastEvent} from 'lightning/platformShowToastEvent';
 
-const button_Delete = [
-    { label: 'Delete', name: 'delete' }
-];
 const CONTACT_COLUMNS = [
     {label: "FIRST NAME", fieldName: "FirstName", type: "text"},
     {label: "LAST NAME", fieldName: "LastName"},
@@ -15,20 +11,14 @@ const CONTACT_COLUMNS = [
     {label: "ACCOUNT NAME", fieldName: "AccountId", type: "url", typeAttributes: {label: { fieldName: "AccountName"}}},
     {label: "MOBILE PHONE", fieldName: "Phone", type: "phone"},
     {label: "CREATED DATE", fieldName: "CreatedDate", type: "date", typeAttributes: {value:"1547250828000", year:"numeric",
-     month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit", hour12:"true"}},
-    {type: 'button', typeAttributes: { RowAction: button_Delete, variant:"destructive", label:"Delete",
-    name: 'delete', iconName:"utility:delete", class: "slds-m-left_x-small"}}  
-];
+     month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit", hour12:"true"}}
 
 export default class ContactTable extends LightningElement {
     columns = CONTACT_COLUMNS;
     searchKey = "";
     error;
-    @track DeleteContactModal = false;
-    @track NewContactModal = false;
     @track data;
     @track refreshTable;
-    @track currentRecord;
 
     @wire(getContactListWire)
     contacts(result) {
@@ -86,68 +76,3 @@ export default class ContactTable extends LightningElement {
                 break;
                 }
        }
-
-    //Open modal box
-    deleteRow() {
-        this.DeleteContactModal = true;
-        }
-
-    //closing modal box
-    closeModal() {
-        this.DeleteContactModal = false;
-        this.NewContactModal = false;
-               }
-    
-    //delete row
-    deleteContactRow(event){
-        let row = event.detail.id;
-        console.log('row ====> ' + row);
-        currentRecord = [];
-        currentRecord = row.id;
-        console.log('currentRecord ====> ' + currentRecord);
-        deleteContact({contactIds: this.currentRecord})
-
-        .then(result => {
-            console.log('result ====> ' + result);
-
-            this.closeModal();
-            refreshApex(this.refreshTable);
-
-            this.dispatchEvent(new ShowToastEvent({
-                title: 'Success!!!',
-                message: currentRecord.FirstName + ' '+ currentRecord.LastName +' Contact deleted.',
-                variant: 'success'
-            }));
-        })
-        .catch(error => {
-            window.console.log('Error ====> '+error);
-            this.dispatchEvent(new ShowToastEvent({
-                title: 'Error!!', 
-                message: error.message, 
-                variant: 'error'
-            }));
-        });
-            
-    }
-
-    //create new contact
-    handleNewContact(){
-        this.NewContactModal = true;   
-    }
-
-    handleSubmit(event) {
-        console.log('onsubmit event recordEditForm'+ event.detail.fields);    
-    }
-
-    handleSuccess(event) {
-        console.log('onsuccess event recordEditForm',event.detail.id)
-        refreshApex(this.refreshTable);
-        this.closeModal();
-        this.dispatchEvent(new ShowToastEvent({
-            title: 'Success!!!',
-            message: ' Contact created',
-            variant: 'success'
-        }));
-    }
-    
-}
