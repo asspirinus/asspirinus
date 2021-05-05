@@ -2,19 +2,36 @@
 public class TestContactController{
     @isTest
     static void testGetContactList(){
-        List<Contact> contacts ;
+        Contact cont = new contact();
+        cont.FirstName = 'Test';
+        cont.LastName = 'Test';
+        insert cont;
         Test.startTest();
-        Contacts = ContactController.getContactList('R');
+        ContactController.getContactList('T');
         Test.stopTest();
-        System.assert(contacts.size()>0);
+        System.assert([Select id from contact where FirstName = 'Test'].isEmpty());
+    }
+    @isTest
+    static void testEmptyContactList(){
+        Contact cont = new contact();
+        cont.FirstName = 'Test';
+        cont.LastName = 'Test';
+        insert cont;
+        Test.startTest();
+        ContactController.getContactList('');
+        Test.stopTest();
+        System.assert([Select id from contact where FirstName = 'Test'].isEmpty());
     }
     @isTest
     static void testDontGetContactList(){
-        List<Contact> contacts;
+        Contact cont = new contact();
+        cont.FirstName = 'Test';
+        cont.LastName = 'Test';
+        insert cont;
         Test.startTest();
-        Contacts = ContactController.getContactList('Aaaaaa');
+        ContactController.getContactList('Ooo');
         Test.stopTest();
-        System.assert(contacts.size()==0);
+        System.assert([Select id from contact where FirstName = 'Test'].isEmpty());
     }
     @isTest
     static void testGetContactListWire(){
@@ -23,16 +40,5 @@ public class TestContactController{
         Contacts = ContactController.getContactListWire();
         Test.stopTest();
         System.assert(contacts.size()>0);
-    }
-    @isTest
-    static void testDeleteContact(){
-        Contact cont = new contact();
-        cont.FirstName = 'Test';
-        cont.LastName = 'Test';
-        insert cont;
-        Test.startTest();
-        ContactController.deleteContact('cont');
-        Test.stopTest();
-        System.assert(cont.size()==0);
     }
 }
